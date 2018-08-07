@@ -64,7 +64,6 @@ public abstract class BaseActivity extends Activity implements
             }
         }
     }
- // 4.��App�����������˵���̨֮��,�б�Ҫ�ͷ���Դ,�رջ����Ƴ�ɨ�����
     public void onPause() {
         mScannerManager.removeScannerStatusListener(this);
         mScannerManager.disconnectDecoderSRV();
@@ -74,7 +73,6 @@ public abstract class BaseActivity extends Activity implements
     protected void closeSelf() {
         this.finish();
     }
-//����uI
     @SuppressLint("HandlerLeak")
     protected Handler mHandle = new Handler() {
         public void handleMessage(Message msg) {
