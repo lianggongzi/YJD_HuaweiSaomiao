@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.administrator.myapplication.MainActivity">
+
+
+    <TextView
+        android:id="@+id/pn_tv"
+        style="@style/TextView_20dp" />
+    <TextView
+        android:id="@+id/mfgcode_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/date_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/gw_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/nw_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/mlot_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/po_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/pakgid_tv"
+        style="@style/TextView_20dp" />
+
+    <TextView
+        android:id="@+id/qty_tv"
+        style="@style/TextView_20dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"
+        android:layout_marginTop="30dp"
+        android:textSize="22dp"
+        android:gravity="center"
+        android:text="按下左右两侧按钮进行扫描二维码"/>
+
+</LinearLayout>
