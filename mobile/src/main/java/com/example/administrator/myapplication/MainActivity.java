@@ -13,7 +13,6 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 public class MainActivity extends BaseActivity {
 
     TextView PAKID_Tv;
