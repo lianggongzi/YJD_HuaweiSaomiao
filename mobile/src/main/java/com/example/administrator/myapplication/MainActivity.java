@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//随便大师傅告诉大哥说的符合规定符合公司大佛结果及欧普
 public class MainActivity extends BaseActivity {
 
     TextView PAKID_Tv;
