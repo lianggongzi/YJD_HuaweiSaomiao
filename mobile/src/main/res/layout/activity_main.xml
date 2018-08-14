@@ -42,13 +42,26 @@
     <TextView
         android:id="@+id/qty_tv"
         style="@style/TextView_20dp" />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:text="保存数据"/>
+
+
     <TextView
+        android:id="@+id/baocun"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:textSize="22dp"
         android:gravity="center"
         android:text="按下左右两侧按钮进行扫描二维码"/>
+
 
 </LinearLayout>

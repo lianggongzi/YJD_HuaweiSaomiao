@@ -28,4 +28,6 @@ dependencies {
     wearApp project(':wear')
     implementation 'com.google.android.gms:play-services-wearable:+'
     implementation files('libs/zltd_common.jar')
+    compile 'com.ashokvarma.android:bottom-navigation-bar:2.0.3'
+    implementation files('libs/jxl.jar')
 }
