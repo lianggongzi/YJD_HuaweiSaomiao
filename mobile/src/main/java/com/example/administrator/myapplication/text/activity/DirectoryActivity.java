@@ -206,7 +206,7 @@ public class DirectoryActivity extends AppCompatActivity {
         file = new File(getSDPath() + "/Record");
         makeDir(file);
 //        ExcelUtils.initExcel(file.toString() + "/出库明细.xls", title);
-        ExcelUtils.initExcel(file.toString() + "/"+excelName+".xls", title,excelName);
+        ExcelUtils.initExcels(file.toString() + "/"+excelName+".xls", title,excelName);
         fileName = getSDPath() + "/Record/"+excelName+".xls";
         ExcelUtils.writeObjListToExcel(getRecordData(), fileName, this);
     }

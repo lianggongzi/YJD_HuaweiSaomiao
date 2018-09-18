@@ -309,7 +309,7 @@ public class Scanning_Fragment extends Fragment {
                 break;
             case R.id.scanning_btn:
                 initOutExcel(datas, name, beizhu,phone,addres);  //Excel表添加数据
-//                exportExcel(); //导出Excel表
+                exportExcel(); //导出Excel表
 
 //                List<SerialBean> list = serial1Dao.select("ABC-003", "ABC");
 //                Log.d("aaaaaaa", list.toString() + "----多条件查询");
@@ -342,11 +342,11 @@ public class Scanning_Fragment extends Fragment {
      * @param
      */
     public void exportExcel() {
-//        file = new File(getSDPath() + "/Record");
-//        makeDir(file);
-//        ExcelUtils.initExcel(file.toString() + "/出库明细.xls", title);
-//        fileName = getSDPath() + "/Record/出库明细.xls";
-//        ExcelUtils.writeObjListToExcel(getRecordData(), fileName, getActivity());
+        file = new File(getSDPath() + "/Record");
+        makeDir(file);
+        ExcelUtils.initExcel(file.toString() + "/出库明细.xls", title);
+        fileName = getSDPath() + "/Record/出库明细.xls";
+        ExcelUtils.writeObjListToExcel(getRecordData(), fileName, getActivity());
     }
 
 

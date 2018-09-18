@@ -70,7 +70,44 @@ public class ExcelUtils {
      * @param fileName
      * @param colName
      */
-    public static void initExcel(String fileName, String[] colName,String excelName) {
+    public static void initExcel(String fileName, String[] colName) {
+        format();
+        WritableWorkbook workbook = null;
+
+        try {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            workbook = Workbook.createWorkbook(file);
+            WritableSheet sheet = workbook.createSheet("出库明细", 0);
+            //创建标题栏
+            sheet.addCell((WritableCell) new Label(0, 0, fileName, arial14format));
+            for (int col = 0; col < colName.length; col++) {
+                sheet.addCell(new Label(col, 0, colName[col], arial10format));
+            }
+            sheet.setRowView(0, 340); //设置行高
+            workbook.write();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (workbook != null) {
+                try {
+                    workbook.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 初始化Excel
+     *
+     * @param fileName
+     * @param colName
+     */
+    public static void initExcels(String fileName, String[] colName,String excelName) {
         format();
         WritableWorkbook workbook = null;
 
@@ -153,5 +190,15 @@ public class ExcelUtils {
 
         }
     }
+
+
+    // 创建excel表.
+    // public void createExcel(File file) { WritableSheet ws = null; try { if (!file.exists()) {
+    // 创建表 wwb = Workbook.createWorkbook(file);
+    // 创建表单,其中sheet表示该表格的名字,0表示第一个表格, ws = wwb.createSheet(sheet1, 0);
+    // 在指定单元格插入数据 Label lbl1 = new Label(0, 0, 姓名);
+    // 第一个参数表示,0表示第一列,第二个参数表示行,同样0表示第一行,第三个参数表示想要添加到单元格里的数据. Label bll2 = new Label(1, 0, 性别);
+    // 添加到指定表格里. ws.addCell(lbl1); ws.addCell(bll2);
+    // 从内存中写入文件中 wwb.write(); wwb.close(); } } catch (Exception e) { e.printStackTrace(); } }
 
 }
