@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/colorPrimaryDark">
+
+        <EditText
+            android:id="@+id/time_search_edt"
+            android:layout_width="248dp"
+            android:layout_height="42dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/edittext_background"
+            android:drawableLeft="@drawable/chat_content_iocn_search"
+            android:paddingLeft="10dp"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:id="@+id/time_search_tv"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:text="搜索"
+            android:textColor="#fff"
+            android:textSize="18dp" />
+    </RelativeLayout>
+
+        <com.github.jdsjlzx.recyclerview.LRecyclerView
+            android:id="@+id/time_search_lrv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
+</LinearLayout>

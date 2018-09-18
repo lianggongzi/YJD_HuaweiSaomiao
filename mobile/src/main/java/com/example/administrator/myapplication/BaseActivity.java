@@ -14,9 +14,10 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 
-public abstract class BaseActivity extends Activity implements
+public abstract class BaseActivity extends AppCompatActivity implements
         ScannerManager.IScannerStatusListener {
     protected static final int UPDATE_LIST = 0x1000;
     protected static final int UPDATE_NUMBER = 0x1001;
@@ -111,6 +112,23 @@ public abstract class BaseActivity extends Activity implements
     @Override
     public void onScannerStatusChanage(int arg0) {
         // TODO Auto-generated method stub
+
+    }
+    @Override
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        /**
+         * 推出系统
+         */
+        new AlertDialog.Builder(this) // 设置对话框标题内容
+                .setTitle("是否要关闭系统？") // 设置按钮及按钮按下事件
+                .setNeutralButton("确定", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        finish();
+                    }
+                }).setNegativeButton("取消", null).show();
 
     }
 }

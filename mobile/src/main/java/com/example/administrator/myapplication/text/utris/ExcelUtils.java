@@ -1,4 +1,4 @@
-package com.example.administrator.myapplication;
+package com.example.administrator.myapplication.text.utris;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -22,7 +22,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 /**
- * Created by Administrator on 2018\8\13 0013.
+ * Created by Administrator on 2018\9\5 0005.
  */
 
 public class ExcelUtils {
@@ -47,19 +47,17 @@ public class ExcelUtils {
             arial14font.setColour(jxl.format.Colour.LIGHT_BLUE);
             arial14format = new WritableCellFormat(arial14font);
             arial14format.setAlignment(jxl.format.Alignment.CENTRE);
-            arial14format.setBorder(jxl.format.Border.ALL,jxl.format.BorderLineStyle.THIN);
+            arial14format.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
             arial14format.setBackground(jxl.format.Colour.VERY_LIGHT_YELLOW);
-
             arial10font = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
             arial10format = new WritableCellFormat(arial10font);
             arial10format.setAlignment(jxl.format.Alignment.CENTRE);
-            arial10format.setBorder(jxl.format.Border.ALL,jxl.format.BorderLineStyle.THIN);
+            arial10format.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
             arial10format.setBackground(Colour.GRAY_25);
-
             arial12font = new WritableFont(WritableFont.ARIAL, 10);
             arial12format = new WritableCellFormat(arial12font);
             arial10format.setAlignment(jxl.format.Alignment.CENTRE);//对齐格式
-            arial12format.setBorder(jxl.format.Border.ALL,jxl.format.BorderLineStyle.THIN); //设置边框
+            arial12format.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN); //设置边框
 
         } catch (WriteException e) {
             e.printStackTrace();
@@ -68,26 +66,27 @@ public class ExcelUtils {
 
     /**
      * 初始化Excel
+     *
      * @param fileName
      * @param colName
      */
-    public static void initExcel(String fileName, String[] colName) {
+    public static void initExcel(String fileName, String[] colName,String excelName) {
         format();
         WritableWorkbook workbook = null;
+
         try {
             File file = new File(fileName);
             if (!file.exists()) {
                 file.createNewFile();
             }
             workbook = Workbook.createWorkbook(file);
-            WritableSheet sheet = workbook.createSheet("成绩表", 0);
+            WritableSheet sheet = workbook.createSheet(excelName, 0);
             //创建标题栏
-            sheet.addCell((WritableCell) new Label(0, 0, fileName,arial14format));
+            sheet.addCell((WritableCell) new Label(0, 0, fileName, arial14format));
             for (int col = 0; col < colName.length; col++) {
                 sheet.addCell(new Label(col, 0, colName[col], arial10format));
             }
-            sheet.setRowView(0,340); //设置行高
-
+            sheet.setRowView(0, 340); //设置行高
             workbook.write();
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,7 +102,8 @@ public class ExcelUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> void writeObjListToExcel(List<T> objList, String fileName, Context c) {
+    public static <T> void writeObjListToExcel(List<T> objList, String fileName, Context
+            c) {
         if (objList != null && objList.size() > 0) {
             WritableWorkbook writebook = null;
             InputStream in = null;
@@ -112,25 +112,23 @@ public class ExcelUtils {
                 setEncode.setEncoding(UTF8_ENCODING);
                 in = new FileInputStream(new File(fileName));
                 Workbook workbook = Workbook.getWorkbook(in);
-                writebook = Workbook.createWorkbook(new File(fileName),workbook);
+                writebook = Workbook.createWorkbook(new File(fileName), workbook);
                 WritableSheet sheet = writebook.getSheet(0);
 
 //              sheet.mergeCells(0,1,0,objList.size()); //合并单元格
 //              sheet.mergeCells()
-
                 for (int j = 0; j < objList.size(); j++) {
                     ArrayList<String> list = (ArrayList<String>) objList.get(j);
                     for (int i = 0; i < list.size(); i++) {
-                        sheet.addCell(new Label(i, j + 1, list.get(i),arial12format));
-                        if (list.get(i).length() <= 5){
-                            sheet.setColumnView(i,list.get(i).length()+8); //设置列宽
-                        }else {
-                            sheet.setColumnView(i,list.get(i).length()+5); //设置列宽
+                        sheet.addCell(new Label(i, j + 1, list.get(i), arial12format));
+                        if (list.get(i).length() <= 5) {
+                            sheet.setColumnView(i, list.get(i).length() + 8); //设置列宽
+                        } else {
+                            sheet.setColumnView(i, list.get(i).length() + 5); //设置列宽
                         }
                     }
-                    sheet.setRowView(j+1,350); //设置行高
+                    sheet.setRowView(j + 1, 350); //设置行高
                 }
-
                 writebook.write();
                 Toast.makeText(c, "导出到手机存储中文件夹Record成功", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {

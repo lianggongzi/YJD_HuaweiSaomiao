@@ -13,10 +13,7 @@ import android.view.KeyEvent;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
-
-
 public class MainActivity extends BaseActivity {
     BottomNavigationBar bottomNavigationBar;
     TextView PAKID_Tv;

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#fff">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="18dp"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/sp_16"
+        android:layout_marginRight="@dimen/sp_16">
+
+        <TextView
+            android:id="@+id/adapter_pinpai_tv"
+            style="@style/TextView_18dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/adapter_xinghao_tv"
+            style="@style/TextView_18dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/adapter_shuliang_tv"
+            style="@style/TextView_18dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/adapter_time_tv"
+            style="@style/TextView_18dp"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/sp_16"
+        android:layout_marginRight="@dimen/sp_16">
+        <TextView
+            android:id="@+id/adapter_tiaoma_tv"
+            style="@style/TextView_18dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="6dp" />
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#d3d3d3"
+        />
+</LinearLayout>

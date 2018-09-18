@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+        <com.github.jdsjlzx.recyclerview.LRecyclerView
+            android:id="@+id/directory_lrv"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:background="#f7f7f7" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_10">
+
+        <TextView
+            android:id="@+id/directory_geshu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="@dimen/sp_16"
+            android:layout_alignParentLeft="true"
+            android:text="总个数：0" />
+
+        <TextView
+            android:id="@+id/directory_shuliang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@+id/scanning_geshu"
+            android:text="总数量：0" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/directory_ll"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginTop="10dp"
+        android:background="#fff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1"
+            android:text="客户："
+            android:textColor="#000"
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/directory_name_tv"
+            style="@style/TextView_18dp"
+            android:layout_marginRight="16dp" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="16dp"
+            android:src="@drawable/chat_content_iocn_go" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/scanning_btn"
+        android:layout_width="328dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/btn_shape_login"
+        android:text="确定"
+        android:textColor="#fff"
+        android:textSize="@dimen/dp_18" />
+</LinearLayout>

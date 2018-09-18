@@ -30,4 +30,10 @@ dependencies {
     implementation files('libs/zltd_common.jar')
     compile 'com.ashokvarma.android:bottom-navigation-bar:2.0.3'
     implementation files('libs/jxl.jar')
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.github.jdsjlzx:LRecyclerView:1.4.3'
+    compile 'com.github.f0ris.sweetalert:library:1.5.1'
+
 }
