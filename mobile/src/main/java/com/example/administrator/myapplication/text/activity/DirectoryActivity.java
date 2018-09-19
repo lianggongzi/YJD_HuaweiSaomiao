@@ -25,6 +25,7 @@ import com.example.administrator.myapplication.text.db.DirectoryDao;
 import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.example.administrator.myapplication.text.utris.DateUtils;
 import com.example.administrator.myapplication.text.utris.ExcelUtils;
+import com.example.administrator.myapplication.text.utris.ExcelUtils1;
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
@@ -105,8 +106,8 @@ public class DirectoryActivity extends AppCompatActivity {
         addres = kehuEvent.getAddress();
         directoryNameTv.setText(kehuEvent.getName());
         beizhu = kehuEvent.getBeizhu();
-        directoryDao.xiugai(name,beizhu,phone,addres);
-        timeCustomerDao.xiugai(name,phone);
+        directoryDao.xiugai(name, beizhu, phone, addres);
+        timeCustomerDao.xiugai(name, phone);
         initData();
     }
 
@@ -125,9 +126,9 @@ public class DirectoryActivity extends AppCompatActivity {
         directoryShuliang.setText("总数量：" + zongshuliang);
         directoryGeshu.setText("总个数：" + geshu);
         directoryNameTv.setText(name);
-        addres=datas.get(0).getAddres();
-        phone=datas.get(0).getPhone();
-        beizhu=datas.get(0).getBeizhu();
+        addres = datas.get(0).getAddres();
+        phone = datas.get(0).getPhone();
+        beizhu = datas.get(0).getBeizhu();
     }
 
     private void initAdapter() {
@@ -184,15 +185,17 @@ public class DirectoryActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.directory_ll:
-                Intent intent = new Intent(this, CustomerActivity.class);
-                intent.putExtra("name", name);
-                intent.putExtra("phone", phone);
-                intent.putExtra("address", addres);
-                intent.putExtra("beizhu", beizhu);
-                startActivity(intent);
+//                Intent intent = new Intent(this, CustomerActivity.class);
+//                intent.putExtra("name", name);
+//                intent.putExtra("phone", phone);
+//                intent.putExtra("address", addres);
+//                intent.putExtra("beizhu", beizhu);
+//                startActivity(intent);
+                file = new File(getSDPath() + "/Record");
+                ExcelUtils.writeObjListToExcel(getRecordData(), file.toString() + "/"+"102"+".xls", this);
                 break;
             case R.id.scanning_btn:
-                exportExcel("101");
+                exportExcel("102");
                 break;
         }
     }
@@ -204,11 +207,11 @@ public class DirectoryActivity extends AppCompatActivity {
      */
     public void exportExcel(String excelName) {
         file = new File(getSDPath() + "/Record");
-        makeDir(file);
-//        ExcelUtils.initExcel(file.toString() + "/出库明细.xls", title);
-        ExcelUtils.initExcels(file.toString() + "/"+excelName+".xls", title,excelName);
-        fileName = getSDPath() + "/Record/"+excelName+".xls";
-        ExcelUtils.writeObjListToExcel(getRecordData(), fileName, this);
+//        makeDir(file);
+        ExcelUtils.initExcels(getRecordData(),file.toString() + "/"+excelName+".xls", title,excelName,this);
+//        ExcelUtils.writeObjListToExcel(getRecordData(), file.toString() + "/"+excelName+".xls", this);
+//        ExcelUtils1.initExcel(file.toString() + "/"+excelName+".xls", title);
+//        ExcelUtils1.writeObjListToExcel(getRecordData(), file.toString() + "/"+excelName+".xls", this);
     }
 
 
@@ -247,12 +250,12 @@ public class DirectoryActivity extends AppCompatActivity {
         return dir;
     }
 
-    public void makeDir(File dir) {
-        if (!dir.getParentFile().exists()) {
-            makeDir(dir.getParentFile());
-        }
-        dir.mkdir();
-    }
+//    public void makeDir(File dir) {
+//        if (!dir.getParentFile().exists()) {
+//            makeDir(dir.getParentFile());
+//        }
+//        dir.mkdir();
+//    }
 
     @Override
     protected void onDestroy() {

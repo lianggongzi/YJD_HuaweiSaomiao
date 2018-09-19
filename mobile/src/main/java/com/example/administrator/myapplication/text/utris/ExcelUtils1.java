@@ -1,7 +1,6 @@
 package com.example.administrator.myapplication.text.utris;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -23,10 +22,10 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 /**
- * Created by Administrator on 2018\9\5 0005.
+ * Created by Administrator on 2018\9\19 0019.
  */
 
-public class ExcelUtils {
+public class ExcelUtils1 {
     public static WritableFont arial14font = null;
 
     public static WritableCellFormat arial14format = null;
@@ -50,11 +49,13 @@ public class ExcelUtils {
             arial14format.setAlignment(jxl.format.Alignment.CENTRE);
             arial14format.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
             arial14format.setBackground(jxl.format.Colour.VERY_LIGHT_YELLOW);
+
             arial10font = new WritableFont(WritableFont.ARIAL, 10, WritableFont.BOLD);
             arial10format = new WritableCellFormat(arial10font);
             arial10format.setAlignment(jxl.format.Alignment.CENTRE);
             arial10format.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
             arial10format.setBackground(Colour.GRAY_25);
+
             arial12font = new WritableFont(WritableFont.ARIAL, 10);
             arial12format = new WritableCellFormat(arial12font);
             arial10format.setAlignment(jxl.format.Alignment.CENTRE);//对齐格式
@@ -74,20 +75,20 @@ public class ExcelUtils {
     public static void initExcel(String fileName, String[] colName) {
         format();
         WritableWorkbook workbook = null;
-
         try {
             File file = new File(fileName);
             if (!file.exists()) {
                 file.createNewFile();
             }
             workbook = Workbook.createWorkbook(file);
-            WritableSheet sheet = workbook.createSheet("出库明细", 0);
+            WritableSheet sheet = workbook.createSheet("102", 0);
             //创建标题栏
             sheet.addCell((WritableCell) new Label(0, 0, fileName, arial14format));
             for (int col = 0; col < colName.length; col++) {
                 sheet.addCell(new Label(col, 0, colName[col], arial10format));
             }
             sheet.setRowView(0, 340); //设置行高
+
             workbook.write();
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,76 +103,36 @@ public class ExcelUtils {
         }
     }
 
-    /**
-     * 初始化Excel
-     *
-     * @param fileName
-     * @param colName
-     */
-    public static <T> void initExcels(List<T> objList, String fileName, String[] colName, String excelName, Context
-            c) {
-        format();
-        WritableWorkbook workbook = null;
 
-        try {
-            File file = new File(fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            workbook = Workbook.createWorkbook(file);
-            WritableSheet sheet = workbook.createSheet(excelName, 0);
-            //创建标题栏
-            sheet.addCell((WritableCell) new Label(0, 0, fileName, arial14format));
-            for (int col = 0; col < colName.length; col++) {
-                sheet.addCell(new Label(col, 0, colName[col], arial10format));
-            }
-//            sheet.setRowView(0, 340); //设置行高
-
-
-            for (int j = 0; j < objList.size(); j++) {
-                ArrayList<String> list = (ArrayList<String>) objList.get(j);
-                for (int i = 0; i < list.size(); i++) {
-                    sheet.addCell(new Label(i, j + 1, list.get(i)));
-                    if (list.get(i).length() <= 5) {
-                        sheet.setColumnView(i, list.get(i).length() + 8); //设置列宽
-                    } else {
-                        sheet.setColumnView(i, list.get(i).length() + 5); //设置列宽
-                    }
-                }
-                sheet.setRowView(j + 1, 350); //设置行高
-            }
-
-            workbook.write();
-            Toast.makeText(c, "导出到手机存储中文件夹Record成功", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (workbook != null) {
-                try {
-                    workbook.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> void writeObjListToExcel(List<T> objList, String fileName, Context
-            c) {
+    public static <T> void writeObjListToExcel(List<T> objList, String fileName, Context c) {
         if (objList != null && objList.size() > 0) {
             WritableWorkbook writebook = null;
-            InputStream in = null;
+//            InputStream in = null;
+            File file = new File(fileName);
             try {
                 WorkbookSettings setEncode = new WorkbookSettings();
                 setEncode.setEncoding(UTF8_ENCODING);
-                in = new FileInputStream(new File(fileName));
-                Workbook workbook = Workbook.getWorkbook(in);
-                writebook = Workbook.createWorkbook(new File(fileName), workbook);
+//                in = new FileInputStream(new File(fileName));
+//                Workbook workbook = Workbook.getWorkbook(in);
+                Workbook workbook = Workbook.getWorkbook(file);
+                WritableSheet sheetold= (WritableSheet) workbook.getSheet(0);
+                writebook = Workbook.createWorkbook(file);
                 WritableSheet sheet = writebook.getSheet(0);
 
-//              sheet.mergeCells(0,1,0,objList.size()); //合并单元格
-//              sheet.mergeCells()
+                int row = sheetold.getRows();
+                for (int j = 0; j <row ; j++) {
+                    ArrayList<String> list = (ArrayList<String>) objList.get(j);
+                    for (int i = 0; i < list.size(); i++) {
+                        sheet.addCell(new Label(i, j , list.get(i), arial12format));
+                        if (list.get(i).length() <= 5) {
+                            sheet.setColumnView(i, list.get(i).length() + 8); //设置列宽
+                        } else {
+                            sheet.setColumnView(i, list.get(i).length() + 5); //设置列宽
+                        }
+                    }
+                }
+
+
 
                 for (int j = 0; j < objList.size(); j++) {
                     ArrayList<String> list = (ArrayList<String>) objList.get(j);
@@ -185,38 +146,83 @@ public class ExcelUtils {
                     }
                     sheet.setRowView(j + 1, 350); //设置行高
                 }
+
                 writebook.write();
                 Toast.makeText(c, "导出到手机存储中文件夹Record成功", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("feng", e + "-----");
-            } finally {
+            }
+            finally {
                 if (writebook != null) {
                     try {
                         writebook.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                 }
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                if (in != null) {
+//                    try {
+//                        in.close();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
             }
 
         }
     }
 
-    // 创建excel表.
-    // public void createExcel(File file) { WritableSheet ws = null; try { if (!file.exists()) {
-    // 创建表 wwb = Workbook.createWorkbook(file);
-    // 创建表单,其中sheet表示该表格的名字,0表示第一个表格, ws = wwb.createSheet(sheet1, 0);
-    // 在指定单元格插入数据 Label lbl1 = new Label(0, 0, 姓名);
-    // 第一个参数表示,0表示第一列,第二个参数表示行,同样0表示第一行,第三个参数表示想要添加到单元格里的数据. Label bll2 = new Label(1, 0, 性别);
-    // 添加到指定表格里. ws.addCell(lbl1); ws.addCell(bll2);
-    // 从内存中写入文件中 wwb.write(); wwb.close(); } } catch (Exception e) { e.printStackTrace(); } }
+
+//    // 创建excel表.
+//    public void createExcel(File file) {
+//        WritableSheet ws = null;
+//        WritableWorkbook workbook = null;
+//        try {
+//            if (!file.exists()) {
+//                // 创建表
+//                workbook = Workbook.createWorkbook(file);
+//                // 创建表单,其中sheet表示该表格的名字,0表示第一个表格,
+//                ws = workbook.createSheet(sheet1, 0);
+//                // 在指定单元格插入数据
+//                Label lbl1 = new Label(0, 0, 姓名);
+//                // 第一个参数表示,0表示第一列,第二个参数表示行,同样0表示第一行,第三个参数表示想要添加到单元格里的数据.
+//                Label bll2 = new Label(1, 0, 性别);
+//                // 添加到指定表格里.
+//                ws.addCell(lbl1);
+//                ws.addCell(bll2);
+//                // 从内存中写入文件中
+//                workbook.write();
+//                workbook.close();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//
+//    //    然后当想往表里添加数据时,应该:
+//    public void writeToExcel(String name, String gender) {
+//        WritableWorkbook workbook = null;
+//        try {
+////            每次插入数据,都要取原来的表,然后新建一个表,然后将原来的表的内容添加到新表上.但只要两个路径相同的话,效果相当于在原来的表添加.
+//            Workbook oldWwb = Workbook.getWorkbook(excelFile);
+//            workbook = Workbook.createWorkbook(excelFile, oldWwb);
+////             获取指定索引的表格
+//            WritableSheet ws = workbook.getSheet(0);
+////             获取该表格现有的行数
+//            int row = ws.getRows();
+//            Label lbl1 = new Label(0, row, name);
+//            Label bll2 = new Label(1, row, gender);
+//            ws.addCell(lbl1);
+//            ws.addCell(bll2);
+////             从内存中写入文件中,只能刷一次.
+//            workbook.write();
+//            workbook.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }
+

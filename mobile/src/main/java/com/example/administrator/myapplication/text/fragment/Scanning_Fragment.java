@@ -78,8 +78,8 @@ public class Scanning_Fragment extends Fragment {
     private CommonAdapter<SerialBean> adapter;
     private List<SerialBean> datas = new ArrayList<>(); //PDA机屏幕上的List集合
     private SweetAlertDialog sweetAlertDialog;
-    private SweetAlertDialog chongfuDialog;
 
+    private SweetAlertDialog chongfuDialog;
 
     String name = "";
     String phone = "";
@@ -309,7 +309,7 @@ public class Scanning_Fragment extends Fragment {
                 break;
             case R.id.scanning_btn:
                 initOutExcel(datas, name, beizhu,phone,addres);  //Excel表添加数据
-                exportExcel(); //导出Excel表
+//                exportExcel(); //导出Excel表
 
 //                List<SerialBean> list = serial1Dao.select("ABC-003", "ABC");
 //                Log.d("aaaaaaa", list.toString() + "----多条件查询");
