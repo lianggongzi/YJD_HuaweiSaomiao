@@ -16,6 +16,7 @@ public class XLSInfor implements Serializable {
         return serialVersionUID;
     }
 
+    private String riqi;
     private String serialNumber;//条形编码
     private String number;//数量
     private String model;//型号n
@@ -29,6 +30,14 @@ public class XLSInfor implements Serializable {
 
     public static void setSerialVersionUID(long serialVersionUID) {
         XLSInfor.serialVersionUID = serialVersionUID;
+    }
+
+    public String getRiqi() {
+        return riqi;
+    }
+
+    public void setRiqi(String riqi) {
+        this.riqi = riqi;
     }
 
     public String getSerialNumber() {
@@ -66,13 +75,12 @@ public class XLSInfor implements Serializable {
     @Override
     public String toString() {
         return "XLSInfor{" +
-                "serialNumber='" + serialNumber + '\'' +
+                "riqi='" + riqi + '\'' +
+                ", serialNumber='" + serialNumber + '\'' +
                 ", number='" + number + '\'' +
                 ", model='" + model + '\'' +
                 ", brand='" + brand + '\'' +
                 '}';
     }
-
-
 }
 

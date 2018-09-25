@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.example.administrator.myapplication.text.db.TimeDao;
 import com.example.administrator.myapplication.text.utris.DateUtils;
 import com.example.administrator.myapplication.text.utris.ExcelUtils;
+import com.example.administrator.myapplication.text.utris.SPUtils;
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
@@ -41,6 +43,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,8 +82,8 @@ public class Scanning_Fragment extends Fragment {
     private CommonAdapter<SerialBean> adapter;
     private List<SerialBean> datas = new ArrayList<>(); //PDA机屏幕上的List集合
     private SweetAlertDialog sweetAlertDialog;
-
     private SweetAlertDialog chongfuDialog;
+
 
     String name = "";
     String phone = "";
@@ -98,6 +102,12 @@ public class Scanning_Fragment extends Fragment {
     DirectoryDao directoryDao; //总数据的数据库
     TimeDao timeDao;//时间数据库
     TimeCustomerDao timeCustomerDao;//时间目录下客户资料数据库
+    //计时时间
+    public int timeing=10;
+    //点击按钮的标志
+    public boolean flag=true;
+    //创建一个Handler对象
+    public Handler handler = new Handler();
 
     public static Scanning_Fragment newInstance() {
         Scanning_Fragment fragment = new Scanning_Fragment();
@@ -105,6 +115,30 @@ public class Scanning_Fragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    Runnable runnable =new Runnable() {
+
+        @Override
+        public void run() {
+            if(timeing>0){
+                timeing--;
+                scanningBtn.setText(timeing+"秒后重新点击");
+//(任务内延时)
+//每隔1s实现定时操作更改ui页面的数字
+                handler.postDelayed(this,1000);
+                scanningBtn.setEnabled(false);
+              flag=true;
+            }else{
+//计时到10秒后关闭此定时器，重置标志位，重置计时0
+                handler.removeCallbacks(this);
+                scanningBtn.setText("保存");
+                flag = false;
+                timeing = 10;
+                scanningBtn.setEnabled(true);
+            }
+        }
+    };
+
 
     @Nullable
     @Override
@@ -133,9 +167,11 @@ public class Scanning_Fragment extends Fragment {
     //接受扫码消息
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void Event(MessageEvent messageEvent) {
-        scanningTv.setText(messageEvent.getMessage());
-        initData(messageEvent.getMessage());
 
+        String string=messageEvent.getMessage();
+        string.replace(" ","");
+        scanningTv.setText(string);
+        initData(string);
     }
 
 
@@ -149,12 +185,22 @@ public class Scanning_Fragment extends Fragment {
         beizhu = kehuEvent.getBeizhu();
     }
 
+    public static String replaceBlank(String src) {
+        String dest = "";
+        if (src != null) {
+            Pattern pattern = Pattern.compile("\t|\r|\n|\\s*");
+            Matcher matcher = pattern.matcher(src);
+            dest = matcher.replaceAll("");
+        }
+        return dest;
+    }
 
     private void initData(String data) {
 //     String str=   data.substring(0, data.indexOf("-"));
         String qian = data.substring(0, data.indexOf("-"));
         String tou = qian.substring(0, 7);
-        String hou = data.substring(data.indexOf("-"));
+        String hour = data.substring(data.indexOf("-"));
+        String hou = replaceBlank(hour);
         int intQian = Integer.parseInt(qian.substring(7, 12));
         int intHou = Integer.parseInt(hou.substring(8, 13));
         int shuliang = intHou - intQian + 1;
@@ -172,7 +218,7 @@ public class Scanning_Fragment extends Fragment {
                     }
                 });
                 chongfuDialog.show();
-                isChongfu = true;  //重复了
+                isChongfu = false;  //重复了
                 return;
             } else {
                 chongfuDialog.dismiss();
@@ -206,30 +252,34 @@ public class Scanning_Fragment extends Fragment {
         if (list.size() == 0 || name.equals("")) {
             Toast.makeText(getActivity(), "请输入资料", Toast.LENGTH_SHORT).show();
         } else {
-            List<SerialBean> xlsInfors = list;
-            for (int i = 0; i < xlsInfors.size(); i++) {
-                String SerialNumber = xlsInfors.get(i).getSerialNumber();
-                String model = xlsInfors.get(i).getModel();
-                String quantity = xlsInfors.get(i).getNumber();
-                String brand = xlsInfors.get(i).getBrand();
-                int xuhaoNumber = i + 1;
-                outboundBeanList.add(new OutboundBean(String.valueOf(xuhaoNumber), DateUtils.getCurrentTime2(), SerialNumber, model, quantity, name, brand, beizhu,phone,addres));
-            }
-            boolean isdirectory = false;
-            Log.d("aaaaaaa", outboundBeanList.toString() + "------aaaaaaaaaaaaaaaaaa");
-            for (OutboundBean outboundBean : outboundBeanList) {
-                isdirectory = directoryDao.insert(outboundBean);  //保存总数据
-                timeDao.insert(outboundBean.getTime());//保存时间，以作为时间目录的数据源
-                timeCustomerBeans.add(new TimeCustomerBean(outboundBean.getTime(),outboundBean.getCustomerName(),outboundBean.getPhone()));
-            }
-            for (TimeCustomerBean timeCustomerBean:timeCustomerBeans) {
-                timeCustomerDao.insert(timeCustomerBean);//保存时间目录客户数据的数据源
-            }
-            if (isdirectory == true) {
-                Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "保存失败", Toast.LENGTH_SHORT).show();
-            }
+
+                handler.post(runnable);
+                List<SerialBean> xlsInfors = list;
+                for (int i = 0; i < xlsInfors.size(); i++) {
+                    String SerialNumber = xlsInfors.get(i).getSerialNumber();
+                    String model = xlsInfors.get(i).getModel();
+                    String quantity = xlsInfors.get(i).getNumber();
+                    String brand = xlsInfors.get(i).getBrand();
+                    int xuhaoNumber = i + 1;
+                    outboundBeanList.add(new OutboundBean(String.valueOf(xuhaoNumber), DateUtils.getCurrentTime3(), SerialNumber, model, quantity, name, brand, beizhu,phone,addres));
+                }
+                boolean isdirectory = false;
+                for (OutboundBean outboundBean : outboundBeanList) {
+                    isdirectory = directoryDao.insert(outboundBean);  //保存总数据
+                    timeDao.insert(outboundBean.getTime());//保存时间，以作为时间目录的数据源
+                    timeCustomerBeans.add(new TimeCustomerBean(outboundBean.getTime(),outboundBean.getCustomerName(),outboundBean.getPhone()));
+                }
+                for (TimeCustomerBean timeCustomerBean:timeCustomerBeans) {
+                    timeCustomerDao.insert(timeCustomerBean);//保存时间目录客户数据的数据源
+                }
+                if (isdirectory == true) {
+                    Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
+
+
+                } else {
+                    Toast.makeText(getActivity(), "保存失败", Toast.LENGTH_SHORT).show();
+                }
+
         }
     }
 
@@ -243,7 +293,7 @@ public class Scanning_Fragment extends Fragment {
                 holder.setText(R.id.adapter_xinghao_tv, serialBean.getModel());
                 holder.setText(R.id.adapter_tiaoma_tv, serialBean.getSerialNumber());
                 holder.setText(R.id.adapter_shuliang_tv, serialBean.getNumber());
-                holder.setText(R.id.adapter_time_tv, DateUtils.getCurrentTime2());
+                holder.setText(R.id.adapter_time_tv, DateUtils.getCurrentTime4());
             }
         };
 
@@ -309,88 +359,25 @@ public class Scanning_Fragment extends Fragment {
                 break;
             case R.id.scanning_btn:
                 initOutExcel(datas, name, beizhu,phone,addres);  //Excel表添加数据
-//                exportExcel(); //导出Excel表
 
-//                List<SerialBean> list = serial1Dao.select("ABC-003", "ABC");
-//                Log.d("aaaaaaa", list.toString() + "----多条件查询");
-//                Collections.reverse(list);
-//                Log.d("aaaaaaa", list.toString() + "----多条件查询倒叙");
                 break;
             case R.id.scanning_shuliang:
-//                List<OutboundBean> outboundBeanList = directoryDao.select_time_name("2018/09/18","四毛");
-//                Log.d("aaaaaaa",outboundBeanList.size()+"");
-//                for (OutboundBean outboundBean:outboundBeanList){
-//                    Log.d("aaaaaaa",outboundBean.toString());
-//                }
+
                 break;
             case R.id.scanning_delete_tv:
-//                timeDao.delete();
-//                directoryDao.delete();
-//                timeCustomerDao.delete();
                 datas.clear();
                 lRecyclerViewAdapter.notifyDataSetChanged();
-                scanningShuliang.setText("总数量：0");
-                scanningGeshu.setText("总个数：0");
+                geshu=0;
+                zongshuliang=0;
+                scanningShuliang.setText("总数量："+zongshuliang);
+                scanningGeshu.setText("总个数："+geshu);
+
+                handler.removeCallbacks(runnable);
+                scanningBtn.setText("保存");
+                flag = false;
+                timeing = 10;
+                scanningBtn.setEnabled(true);
                 break;
         }
     }
-
-
-    /**
-     * 导出excel
-     *
-     * @param
-     */
-    public void exportExcel() {
-        file = new File(getSDPath() + "/Record");
-        makeDir(file);
-        ExcelUtils.initExcel(file.toString() + "/出库明细.xls", title);
-        fileName = getSDPath() + "/Record/出库明细.xls";
-        ExcelUtils.writeObjListToExcel(getRecordData(), fileName, getActivity());
-    }
-
-
-    /**
-     * 将数据集合 转化成ArrayList<ArrayList<String>>
-     *
-     * @return
-     */
-    private ArrayList<ArrayList<String>> getRecordData() {
-        recordList = new ArrayList<>();
-        for (int i = 0; i < outboundBeanList.size(); i++) {
-            OutboundBean outboundBean = outboundBeanList.get(i);
-            ArrayList<String> beanList = new ArrayList<String>();
-            beanList.add(outboundBean.getXuhaoNumber());
-            beanList.add(outboundBean.getTime());
-            beanList.add(outboundBean.getBarcodeNumber());
-            beanList.add(outboundBean.getModel());
-            beanList.add(outboundBean.getQuantity());
-            beanList.add(outboundBean.getCustomerName());
-            beanList.add(outboundBean.getBrand());
-            beanList.add(outboundBean.getBeizhu());
-            recordList.add(beanList);
-        }
-        return recordList;
-    }
-
-
-    private String getSDPath() {
-        File sdDir = null;
-        boolean sdCardExist = Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED);
-        if (sdCardExist) {
-            sdDir = Environment.getExternalStorageDirectory();
-        }
-        String dir = sdDir.toString();
-        return dir;
-    }
-
-    public void makeDir(File dir) {
-        if (!dir.getParentFile().exists()) {
-            makeDir(dir.getParentFile());
-        }
-        dir.mkdir();
-    }
-
-
 }

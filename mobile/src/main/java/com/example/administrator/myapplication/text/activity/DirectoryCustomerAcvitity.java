@@ -17,6 +17,7 @@ import com.example.administrator.myapplication.text.bean.TimeCustomerBean;
 import com.example.administrator.myapplication.text.db.DirectoryDao;
 import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
+import com.github.jdsjlzx.interfaces.OnItemLongClickListener;
 import com.github.jdsjlzx.interfaces.OnRefreshListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
@@ -29,6 +30,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by Administrator on 2018\9\14 0014.
@@ -44,6 +46,8 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
     private List<TimeCustomerBean> datas = new ArrayList<>(); //导出Excel表数据库里时间的List集合
     String time = "";
     TimeCustomerDao timeCustomerDao;
+    DirectoryDao directoryDao;
+    private SweetAlertDialog sweetAlertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
         setContentView(R.layout.activity_directory_customer);
         ButterKnife.bind(this);
         timeCustomerDao = new TimeCustomerDao(this);
+        directoryDao = new DirectoryDao(this);
         initAdapter();
         initData();
     }
@@ -71,10 +76,40 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
         lRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Intent intent=new Intent(DirectoryCustomerAcvitity.this,DirectoryActivity.class);
-                intent.putExtra("time",datas.get(position).getTime());
-                intent.putExtra("name",datas.get(position).getName());
+                Intent intent = new Intent(DirectoryCustomerAcvitity.this, DirectoryActivity.class);
+                intent.putExtra("time", datas.get(position).getTime());
+                intent.putExtra("name", datas.get(position).getName());
                 startActivity(intent);
+            }
+        });
+        lRecyclerViewAdapter.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, final int position) {
+                sweetAlertDialog = new SweetAlertDialog(DirectoryCustomerAcvitity.this, SweetAlertDialog.WARNING_TYPE);
+                sweetAlertDialog.showCancelButton(true);
+                sweetAlertDialog.setCancelText("取消");
+                sweetAlertDialog.setTitleText("确定删除此条信息?");
+                sweetAlertDialog.setConfirmText("确定");
+                sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                    }
+                });
+                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        timeCustomerDao.delete(datas.get(position).getPhone());
+                        directoryDao.delete(datas.get(position).getTime(), datas.get(position).getPhone());
+
+                        datas.remove(position);
+                        lRecyclerViewAdapter.notifyDataSetChanged();
+                        sweetAlertDialog.dismiss();
+                    }
+                });
+                sweetAlertDialog.show();
+
+
             }
         });
 
@@ -86,7 +121,7 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
         datas.clear();
         List<TimeCustomerBean> stringList = timeCustomerDao.selectTime(time);
         Collections.reverse(stringList);
-        Log.d("aaaaaaa",stringList.toString());
+        Log.d("aaaaaaa", stringList.toString());
         for (int i = 0; i < stringList.size(); i++) {
             datas.add(stringList.get(i));
             lRecyclerViewAdapter.notifyDataSetChanged();

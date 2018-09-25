@@ -108,7 +108,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:background="@drawable/btn_shape_login"
-        android:text="确定"
+        android:text="保存"
         android:textColor="#fff"
         android:textSize="@dimen/dp_18" />
 

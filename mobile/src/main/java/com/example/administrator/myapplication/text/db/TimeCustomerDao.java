@@ -62,10 +62,10 @@ public class TimeCustomerDao {
 
 
     //删除的方法
-    public void delete() {
+    public void delete(String phone) {
         init();
         //根据newsURL进行数据删除
-        db.delete("TimeCustomerBiao", null, null);
+        db.delete("TimeCustomerBiao", "phone = ? ", new  String[]{phone});
         db.close();
     }
 

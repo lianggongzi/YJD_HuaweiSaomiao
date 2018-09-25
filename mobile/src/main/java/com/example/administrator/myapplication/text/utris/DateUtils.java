@@ -186,6 +186,21 @@ public class DateUtils {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
         return formatter.format(new Date());
     }
+    /**
+     * 获取当前时间，输出格式
+     * "yyyy年MM月dd日HH时mm分ss秒"
+     */
+    public static String getCurrentTime3() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        return formatter.format(new Date());
+    }    /**
+     * 获取当前时间，输出格式
+     * "yyyy年MM月dd日HH时mm分ss秒"
+     */
+    public static String getCurrentTime4() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return formatter.format(new Date());
+    }
 
     /**
      * 获取未来时间距今相隔的天数

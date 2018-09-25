@@ -35,6 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by Administrator on 2018\9\13 0013.
@@ -132,6 +133,9 @@ public class TimeFragment extends Fragment {
                 Intent intent=new Intent(getActivity(), DirectoryCustomerAcvitity.class);
                 intent.putExtra("time",datas.get(position));
                 startActivity(intent);
+
+
+
             }
         });
     }

@@ -16,9 +16,9 @@ import jxl.write.WritableWorkbook;
 public class ExcelManager {
     //	private String[] cnName={"条码","货物名称","规格型号","计量单位","账面数量","实盘数量"};
 //	private String[] fieldName={"barcodeID","goodsName","specification","units","numberOfAmount","numberOfFirmOffer"};
-    private String[] cnName={"条码","数量","型号","品牌"};
-    private String[] fieldName={"serialNumber","number","model","brand"};
-    private int[] colNum = {-1,-1,-1,-1};
+    private String[] cnName={"日期","条码","数量","型号","品牌"};
+    private String[] fieldName={"riqi","serialNumber","number","model","brand"};
+    private int[] colNum = {-1,-1,-1,-1,-1};
 
 
     private String[] KehucnName={"客户名称","联系电话","联系地址"};
@@ -101,7 +101,7 @@ public class ExcelManager {
 //				System.out.println("第一张表被打开");
 
                 if (type.equals("ziliao")){
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 5; i++) {
                         // 得到第一列第一行的单元格
                         Cell cell1 = sheet.findCell(cnName[i]);
                         String s= cell1.getContents();
@@ -206,7 +206,7 @@ public class ExcelManager {
                             Cell cell = sheet.getCell(0, iRd);
                             if (cell.getType() != CellType.EMPTY) {
                                 T resultObject = cls.newInstance();
-                                for (int i = 0; i < 4; i++) {
+                                for (int i = 0; i < 5; i++) {
                                     Object col_val = null;
                                     if (colNum[i] != -1) {
                                         Cell cell1 = sheet.getCell(colNum[i], iRd);

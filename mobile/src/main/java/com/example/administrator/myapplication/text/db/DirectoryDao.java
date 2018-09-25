@@ -75,10 +75,10 @@ public class DirectoryDao {
 
 
     //删除的方法
-    public void delete() {
+    public void delete(String time,String phone) {
         init();
         //根据newsURL进行数据删除
-        db.delete("DirectoryBiao", null, null);
+        db.delete("DirectoryBiao", "time = ? and phone = ? ", new String[]{time,phone});
         db.close();
     }
 

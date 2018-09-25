@@ -46,7 +46,6 @@
                         <ImageView
                             android:layout_width="28dip"
                             android:layout_height="28dip"
-                            android:layout_below="@+id/img1"
                             android:layout_centerVertical="true"
                             android:background="@drawable/folder" />
                     </RelativeLayout>

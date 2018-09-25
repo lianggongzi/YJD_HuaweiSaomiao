@@ -156,7 +156,6 @@ public class CustomerActivity extends AppCompatActivity {
         datas.clear();
         List<CustomerBean> list = customerDao.select(data);
         for (int i = 0; i < list.size(); i++) {
-            Log.d("llllllll", list.get(i).toString());
         }
         datas.addAll(list);
         lRecyclerViewAdapter.notifyDataSetChanged();

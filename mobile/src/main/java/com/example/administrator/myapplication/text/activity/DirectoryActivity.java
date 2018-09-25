@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,7 +26,7 @@ import com.example.administrator.myapplication.text.db.DirectoryDao;
 import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.example.administrator.myapplication.text.utris.DateUtils;
 import com.example.administrator.myapplication.text.utris.ExcelUtils;
-import com.example.administrator.myapplication.text.utris.ExcelUtils1;
+import com.example.administrator.myapplication.text.utris.SPUtils;
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
@@ -74,11 +75,40 @@ public class DirectoryActivity extends AppCompatActivity {
     String phone = "";
     int quantity = 0;
     TimeCustomerDao timeCustomerDao;
-
     private File file;
-    private String fileName;
     private ArrayList<ArrayList<String>> recordList;
     private static String[] title = {"序号", "扫描日期", "条码编号", "型号", "数量", "客户名称", "品牌", "备注"};
+    //计时时间
+    public int timeing=10;
+    //点击按钮的标志
+    public boolean flag=true;
+    //创建一个Handler对象
+    public Handler handlerdaochu = new Handler();
+
+
+    Runnable runnabledaochu =new Runnable() {
+
+        @Override
+        public void run() {
+            if(timeing>0){
+                timeing--;
+                scanningBtn.setText(timeing+"秒后重新点击");
+//(任务内延时)
+//每隔1s实现定时操作更改ui页面的数字
+                handlerdaochu.postDelayed(this,1000);
+                scanningBtn.setEnabled(false);
+                flag=true;
+            }else{
+//计时到10秒后关闭此定时器，重置标志位，重置计时0
+                handlerdaochu.removeCallbacks(this);
+                scanningBtn.setText("导出Excel表");
+                flag = false;
+                timeing = 10;
+                scanningBtn.setEnabled(true);
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,9 +122,33 @@ public class DirectoryActivity extends AppCompatActivity {
         name = intent.getStringExtra("name");
         //注册订阅者
         EventBus.getDefault().register(this);
-
         initAdapter();
         initData();
+        scanningBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                sweetAlertDialog = new SweetAlertDialog(DirectoryActivity.this, SweetAlertDialog.WARNING_TYPE);
+                sweetAlertDialog.showCancelButton(true);
+                sweetAlertDialog.setCancelText("取消");
+                sweetAlertDialog.setTitleText("确定重置当天导出表吗？");
+                sweetAlertDialog.setConfirmText("确定");
+                sweetAlertDialog.setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        sweetAlertDialog.dismiss();
+                    }
+                });
+                sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                    @Override
+                    public void onClick(SweetAlertDialog sweetAlertDialog) {
+                        SPUtils.remove(DirectoryActivity.this, "fileName");
+                        sweetAlertDialog.dismiss();
+                    }
+                });
+                sweetAlertDialog.show();
+                return false;
+            }
+        });
     }
 
 
@@ -106,16 +160,14 @@ public class DirectoryActivity extends AppCompatActivity {
         addres = kehuEvent.getAddress();
         directoryNameTv.setText(kehuEvent.getName());
         beizhu = kehuEvent.getBeizhu();
-        directoryDao.xiugai(name, beizhu, phone, addres);
-        timeCustomerDao.xiugai(name, phone);
+//        directoryDao.xiugai(name, beizhu, phone, addres);
+//        timeCustomerDao.xiugai(name, phone);
         initData();
     }
 
     private void initData() {
         datas.clear();
         List<OutboundBean> outboundBeanList = directoryDao.select_time_name(time, name);
-        Log.d("aaaaaaa", time + "------" + name);
-        Log.d("aaaaaaa", outboundBeanList.toString() + "------" + outboundBeanList.size());
         for (OutboundBean outboundBean : outboundBeanList) {
             datas.add(outboundBean);
             geshu = datas.size();
@@ -139,7 +191,7 @@ public class DirectoryActivity extends AppCompatActivity {
                 holder.setText(R.id.adapter_xinghao_tv, outboundBean.getModel());
                 holder.setText(R.id.adapter_tiaoma_tv, outboundBean.getBarcodeNumber());
                 holder.setText(R.id.adapter_shuliang_tv, outboundBean.getQuantity());
-                holder.setText(R.id.adapter_time_tv, DateUtils.getCurrentTime2());
+                holder.setText(R.id.adapter_time_tv, outboundBean.getTime());
             }
         };
         directoryLrv.setLayoutManager(new LinearLayoutManager(this));
@@ -165,7 +217,7 @@ public class DirectoryActivity extends AppCompatActivity {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
 
-                        int jian = Integer.parseInt(datas.get(position).getXuhaoNumber());
+                        int jian = Integer.parseInt(datas.get(position).getQuantity());
                         zongshuliang -= jian;
                         directoryShuliang.setText("总数量：" + zongshuliang);
                         datas.remove(position);
@@ -173,6 +225,7 @@ public class DirectoryActivity extends AppCompatActivity {
                         geshu = datas.size();
                         directoryGeshu.setText("总个数：" + geshu);
                         sweetAlertDialog.dismiss();
+
                     }
                 });
                 sweetAlertDialog.show();
@@ -191,11 +244,16 @@ public class DirectoryActivity extends AppCompatActivity {
 //                intent.putExtra("address", addres);
 //                intent.putExtra("beizhu", beizhu);
 //                startActivity(intent);
-                file = new File(getSDPath() + "/Record");
-                ExcelUtils.writeObjListToExcel(getRecordData(), file.toString() + "/"+"102"+".xls", this);
                 break;
             case R.id.scanning_btn:
-                exportExcel("102");
+                String time=DateUtils.getCurrentTime3();
+                if (time.equals(SPUtils.get(this,"time",""))){
+                    exportExcel(time);
+                }else {
+                    SPUtils.remove(DirectoryActivity.this, "fileName");
+                    exportExcel(time);
+                }
+                handlerdaochu.post(runnabledaochu);
                 break;
         }
     }
@@ -207,11 +265,15 @@ public class DirectoryActivity extends AppCompatActivity {
      */
     public void exportExcel(String excelName) {
         file = new File(getSDPath() + "/Record");
-//        makeDir(file);
-        ExcelUtils.initExcels(getRecordData(),file.toString() + "/"+excelName+".xls", title,excelName,this);
-//        ExcelUtils.writeObjListToExcel(getRecordData(), file.toString() + "/"+excelName+".xls", this);
-//        ExcelUtils1.initExcel(file.toString() + "/"+excelName+".xls", title);
-//        ExcelUtils1.writeObjListToExcel(getRecordData(), file.toString() + "/"+excelName+".xls", this);
+        makeDir(file);
+        String fileName = (String) SPUtils.get(this, "fileName", "");
+        if (fileName.equals("")) {
+            String excelFile = file.toString() + "/" + excelName + ".xls";
+            ExcelUtils.initExcels(getRecordData(), excelFile, title, excelName, this);
+        } else {
+            ExcelUtils.writeObjListToExcels(getRecordData(), fileName, excelName, this);
+        }
+
     }
 
 
@@ -250,12 +312,12 @@ public class DirectoryActivity extends AppCompatActivity {
         return dir;
     }
 
-//    public void makeDir(File dir) {
-//        if (!dir.getParentFile().exists()) {
-//            makeDir(dir.getParentFile());
-//        }
-//        dir.mkdir();
-//    }
+    public void makeDir(File dir) {
+        if (!dir.getParentFile().exists()) {
+            makeDir(dir.getParentFile());
+        }
+        dir.mkdir();
+    }
 
     @Override
     protected void onDestroy() {
