@@ -31,7 +31,7 @@
         <com.github.jdsjlzx.recyclerview.LRecyclerView
             android:id="@+id/scanning_lrv"
             android:layout_width="match_parent"
-            android:layout_height="360dp"
+            android:layout_height="320dp"
             android:layout_marginTop="@dimen/dp_10"
             android:background="#f7f7f7" />
     </LinearLayout>
@@ -100,6 +100,24 @@
             android:layout_marginRight="16dp"
             android:src="@drawable/chat_content_iocn_go" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+           android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center"
+            android:text="备注*："/>
+        <TextView
+            android:id="@+id/scanning_beizhu_tv"
+            style="@style/TextView_18dp"
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+      />
+    </LinearLayout>
 
     <Button
         android:id="@+id/scanning_btn"
@@ -110,7 +128,8 @@
         android:background="@drawable/btn_shape_login"
         android:text="保存"
         android:textColor="#fff"
-        android:textSize="@dimen/dp_18" />
+        android:textSize="@dimen/dp_18"
+        android:layout_marginBottom="@dimen/dp_10"/>
 
 
 </LinearLayout>

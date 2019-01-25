@@ -79,6 +79,7 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
                 Intent intent = new Intent(DirectoryCustomerAcvitity.this, DirectoryActivity.class);
                 intent.putExtra("time", datas.get(position).getTime());
                 intent.putExtra("name", datas.get(position).getName());
+                intent.putExtra("beizhu", datas.get(position).getBeizhu());
                 startActivity(intent);
             }
         });
@@ -101,7 +102,6 @@ public class DirectoryCustomerAcvitity extends AppCompatActivity {
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         timeCustomerDao.delete(datas.get(position).getPhone());
                         directoryDao.delete(datas.get(position).getTime(), datas.get(position).getPhone());
-
                         datas.remove(position);
                         lRecyclerViewAdapter.notifyDataSetChanged();
                         sweetAlertDialog.dismiss();

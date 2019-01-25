@@ -90,9 +90,9 @@ public class Customer_Fragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 //        serialDao = new SerialDao(getActivity());
 
-        serial1Dao =new SerialDao(getActivity());
+        serial1Dao = new SerialDao(getActivity());
 
-        customerDao=new CustomerDao(getActivity());
+        customerDao = new CustomerDao(getActivity());
         myHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -199,33 +199,58 @@ public class Customer_Fragment extends Fragment {
     private boolean excelToSheet(String file, String type) {
         boolean isErr = false;
 
-        if (type.equals("ziliao")){
+        if (type.equals("ziliao")) {
             List<XLSInfor> list = em.findMereExcelRecord(file, XLSInfor.class, type);
             if (list.size() > 0) {
                 isErr = true;
             }
-            for (XLSInfor xlsInfor : list) {
-//                boolean insert = serialDao.insert(xlsInfor);  原来的添加进数据库的代码
-                String str =xlsInfor.getSerialNumber();
-                String qian = str.substring(0, str.indexOf("-"));
-                String tou=qian.substring(0,7);
-                String hou = str.substring(str.indexOf("-"));
-                int intQian = Integer.parseInt(qian.substring(7, 12));
-                int intHou = Integer.parseInt(hou.substring(8, 13));
-
-                //截取Excel表源信息的数据， 条形编码截取条码头，前数量和后数量
-                SerialBean serialBean =new SerialBean();
-                serialBean.setSerialNumber(xlsInfor.getSerialNumber());
-                serialBean.setSerialNumberTou(tou);
-                serialBean.setSerialNumberTouMin(intQian);
-                serialBean.setSerialNumberTouMax(intHou);
-                serialBean.setNumber(xlsInfor.getNumber());
-                serialBean.setModel(xlsInfor.getModel());
-                serialBean.setBrand(xlsInfor.getBrand());
-                boolean insert =    serial1Dao.insert(serialBean);
-                Log.d("aaaaaaa",insert+"------截取Excel表源信息的数据， 条形编码截取条码头，前数量和后数量");
+            String str = "";
+            for (int i = 0; i < list.size(); i++) {
+                try {
+                    str = list.get(i).getSerialNumber();
+                    String qian = str.substring(0, str.indexOf("-"));
+                    String tou = qian.substring(0, 7);
+                    String hou = str.substring(str.indexOf("-"));
+                    int intQian = Integer.parseInt(qian.substring(7, 12));
+                    int intHou = Integer.parseInt(hou.substring(8, 13));
+                    //截取Excel表源信息的数据， 条形编码截取条码头，前数量和后数量
+                    SerialBean serialBean = new SerialBean();
+                    serialBean.setSerialNumber(list.get(i).getSerialNumber());
+                    serialBean.setSerialNumberTou(tou);
+                    serialBean.setSerialNumberTouMin(intQian);
+                    serialBean.setSerialNumberTouMax(intHou);
+                    serialBean.setNumber(list.get(i).getNumber());
+                    serialBean.setModel(list.get(i).getModel());
+                    serialBean.setBrand(list.get(i).getBrand());
+                    boolean insert = serial1Dao.insert(serialBean);
+                } catch (Exception x) {
+                    Log.d("feng", str +"======="+ i);
+                }
             }
-        }else if (type.equals("kehu")){
+
+
+//                for (XLSInfor xlsInfor : list) {
+//
+//                    //                boolean insert = serialDao.insert(xlsInfor);  原来的添加进数据库的代码
+//                    String str =xlsInfor.getSerialNumber();
+//                    String qian = str.substring(0, str.indexOf("-"));
+//                    String tou=qian.substring(0,7);
+//                    Log.d("feng",qian+"-----"+tou);
+//                    String hou = str.substring(str.indexOf("-"));
+//                    int intQian = Integer.parseInt(qian.substring(7, 12));
+//                    int intHou = Integer.parseInt(hou.substring(8, 13));
+//                    //截取Excel表源信息的数据， 条形编码截取条码头，前数量和后数量
+//                    SerialBean serialBean =new SerialBean();
+//                    serialBean.setSerialNumber(xlsInfor.getSerialNumber());
+//                    serialBean.setSerialNumberTou(tou);
+//                    serialBean.setSerialNumberTouMin(intQian);
+//                    serialBean.setSerialNumberTouMax(intHou);
+//                    serialBean.setNumber(xlsInfor.getNumber());
+//                    serialBean.setModel(xlsInfor.getModel());
+//                    serialBean.setBrand(xlsInfor.getBrand());
+//                    boolean insert =    serial1Dao.insert(serialBean);
+//                }
+        } else if (type.equals("kehu")) {
             List<CustomerBean> list = em.findMereExcelRecord(file, CustomerBean.class, type);
             if (list.size() > 0) {
                 isErr = true;

@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class TimeCustomerOpenHelper  extends SQLiteOpenHelper {
-    private static final String CREATE_NEWS = "CREATE TABLE TimeCustomerBiao (time text,name text,phone text)";
+    private static final String CREATE_NEWS = "CREATE TABLE TimeCustomerBiao (time text,name text,phone text,beizhu text)";
     public static final String DB_NAME = "timecustomer.db";
 
     public TimeCustomerOpenHelper(Context context) {

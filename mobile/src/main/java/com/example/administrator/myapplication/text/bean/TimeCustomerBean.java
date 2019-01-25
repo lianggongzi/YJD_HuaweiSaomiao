@@ -8,11 +8,13 @@ public class TimeCustomerBean {
     String time;
     String name;
     String phone;
+    String beizhu;
 
-    public TimeCustomerBean(String time, String name, String phone) {
+    public TimeCustomerBean(String time, String name, String phone,String beizhu) {
         this.time = time;
         this.name = name;
         this.phone = phone;
+        this.beizhu=beizhu;
     }
 
     public String getTime() {
@@ -39,12 +41,21 @@ public class TimeCustomerBean {
         this.phone = phone;
     }
 
+    public String getBeizhu() {
+        return beizhu;
+    }
+
+    public void setBeizhu(String beizhu) {
+        this.beizhu = beizhu;
+    }
+
     @Override
     public String toString() {
         return "TimeCustomerBean{" +
                 "time='" + time + '\'' +
                 ", name='" + name + '\'' +
                 ", phone='" + phone + '\'' +
+                ", beizhu='" + beizhu + '\'' +
                 '}';
     }
 }

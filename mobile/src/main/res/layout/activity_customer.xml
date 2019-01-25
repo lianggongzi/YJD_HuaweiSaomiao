@@ -18,6 +18,7 @@
             android:background="@drawable/edittext_background"
             android:drawableLeft="@drawable/chat_content_iocn_search"
             android:paddingLeft="10dp"
+            android:singleLine="true"
             android:textSize="@dimen/sp_16" />
 
         <TextView

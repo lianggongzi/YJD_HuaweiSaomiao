@@ -14,7 +14,6 @@ import java.util.List;
 /**
  * Created by Administrator on 2018\9\5 0005.
  * 导入客户资料的数据库
- *
  */
 
 public class CustomerDao {
@@ -26,17 +25,18 @@ public class CustomerDao {
     }
 
     //写增删改查的方法
-    public void init(){
+    public void init() {
         //打开数据库
         db = helper.getReadableDatabase();
     }
+
     //添加的方法
-    public boolean insert(CustomerBean customerBean){
+    public boolean insert(CustomerBean customerBean) {
         boolean isExist = isNewsExist(customerBean);
-        if (isExist){
+        if (isExist) {
             db.close();
             return false; //返回添加失败
-        }else {
+        } else {
 
             ContentValues contentValues = new ContentValues();
             contentValues.put("name", customerBean.getName());
@@ -49,29 +49,17 @@ public class CustomerDao {
         }
     }
 
-//    //添加的方法
-//    public void insert(XLSInfor serialBean){
-//        init();
-//        Log.d("feng",serialBean.toString()+"-----ContentValues-");
-//            ContentValues contentValues = new ContentValues();
-//            contentValues.put("serialNumber", serialBean.getXuhaoNumber());
-//            contentValues.put("number", serialBean.getNumber());
-//            contentValues.put("model", serialBean.getModel());
-//            contentValues.put("brand", serialBean.getBrand());
-//            db.insert("SerialNumberBiao", null, contentValues);
-//            db.close();
-//    }
-
 
     //删除的方法
-    public void delete( String data) {
+    public void delete(String data) {
         init();
         //根据newsURL进行数据删除
         db.delete("KehuBiao", "name = ? ", new String[]{data});
         db.close();
     }
+
     //查询的方法
-    public List<CustomerBean> select(String str){
+    public List<CustomerBean> select(String str) {
         init();
         List<CustomerBean> list = new ArrayList<>();
         Cursor cursor = db.query("KehuBiao", null, "name = ?", new String[]{str}, null, null, null);
@@ -86,12 +74,13 @@ public class CustomerDao {
             customerBean.setAddres(address);
             list.add(customerBean);
         }
-        return  list;
+        return list;
     }
+
     //判断是否存在
     public boolean isNewsExist(CustomerBean customerBean) {
         init();
-        Cursor cursor = db.query("KehuBiao", null, "phone = ?", new String[]{customerBean.getPhone()}, null, null, null);
+        Cursor cursor = db.query("KehuBiao", null, "name = ? and phone = ?", new String[]{customerBean.getName(), customerBean.getPhone()}, null, null, null);
 //        Log.i("Tag",newsInfo.getUrl());
         if (cursor.moveToFirst()) {
             return true; // 已经存在该数据

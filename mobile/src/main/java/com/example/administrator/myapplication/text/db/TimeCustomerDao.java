@@ -41,6 +41,7 @@ public class TimeCustomerDao {
             contentValues.put("time", timeCustomerBean.getTime());
             contentValues.put("name", timeCustomerBean.getName());
             contentValues.put("phone", timeCustomerBean.getPhone());
+            contentValues.put("beizhu", timeCustomerBean.getBeizhu());
             db.insert("TimeCustomerBiao", null, contentValues);
             db.close();
             return true;//返回添加成功
@@ -79,7 +80,8 @@ public class TimeCustomerDao {
             String time = cursor.getString(cursor.getColumnIndex("time"));
             String name = cursor.getString(cursor.getColumnIndex("name"));
             String phone = cursor.getString(cursor.getColumnIndex("phone"));
-            TimeCustomerBean timeCustomerBean=new TimeCustomerBean(time,name,phone);
+            String beizhu = cursor.getString(cursor.getColumnIndex("beizhu"));
+            TimeCustomerBean timeCustomerBean=new TimeCustomerBean(time,name,phone,beizhu);
             list.add(timeCustomerBean);
         }
         return list;

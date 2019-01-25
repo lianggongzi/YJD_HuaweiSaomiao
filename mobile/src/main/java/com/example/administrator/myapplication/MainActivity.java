@@ -167,12 +167,6 @@ public class MainActivity extends BaseActivity {
                     SDCardHelper.saveFileToSDCardPrivateFilesDir(b, "", PO, MainActivity.this);
                 }
 
-//            SDCardHelper.saveFileToSDCardCustomDir(b,"/PO", PO);
-
-
-//            //excel
-//            poList.add(new PO(PAKID, PN, PO, MFGCODE, DATE, GW, NW, MLot, Qty));
-//            exportExcel(PO);
 
             } catch (Exception e) {
                 Log.d("feng", e + "");

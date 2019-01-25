@@ -3,7 +3,6 @@ package com.example.administrator.myapplication.text.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,8 +29,6 @@ import com.example.administrator.myapplication.text.db.SerialDao;
 import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.example.administrator.myapplication.text.db.TimeDao;
 import com.example.administrator.myapplication.text.utris.DateUtils;
-import com.example.administrator.myapplication.text.utris.ExcelUtils;
-import com.example.administrator.myapplication.text.utris.SPUtils;
 import com.github.jdsjlzx.interfaces.OnItemClickListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
@@ -76,6 +73,8 @@ public class Scanning_Fragment extends Fragment {
     TextView scanningShuliang;
     @BindView(R.id.scanning_delete_tv)
     TextView scanningDeleteTv;
+    @BindView(R.id.scanning_beizhu_tv)
+    TextView scanningBeizhuTv;
 
 
     private LRecyclerViewAdapter lRecyclerViewAdapter = null;
@@ -103,9 +102,9 @@ public class Scanning_Fragment extends Fragment {
     TimeDao timeDao;//时间数据库
     TimeCustomerDao timeCustomerDao;//时间目录下客户资料数据库
     //计时时间
-    public int timeing=10;
+    public int timeing = 10;
     //点击按钮的标志
-    public boolean flag=true;
+    public boolean flag = true;
     //创建一个Handler对象
     public Handler handler = new Handler();
 
@@ -116,19 +115,31 @@ public class Scanning_Fragment extends Fragment {
         return fragment;
     }
 
-    Runnable runnable =new Runnable() {
+    Runnable runnable = new Runnable() {
 
         @Override
         public void run() {
-            if(timeing>0){
+            if (timeing > 0) {
                 timeing--;
-                scanningBtn.setText(timeing+"秒后重新点击");
+                scanningBtn.setText(timeing + "秒后重新点击");
 //(任务内延时)
 //每隔1s实现定时操作更改ui页面的数字
-                handler.postDelayed(this,1000);
+                handler.postDelayed(this, 1000);
+                datas.clear();
+                lRecyclerViewAdapter.notifyDataSetChanged();
+                geshu = 0;
+                zongshuliang = 0;
+                scanningShuliang.setText("总数量：" + zongshuliang);
+                scanningGeshu.setText("总个数：" + geshu);
+//                scanningNameTv.setText("");
+//                scanningBeizhuTv.setText("");
+//                 name = "";
+//                 phone = "";
+//                 addres = "";
+//                 beizhu = "";
                 scanningBtn.setEnabled(false);
-              flag=true;
-            }else{
+                flag = true;
+            } else {
 //计时到10秒后关闭此定时器，重置标志位，重置计时0
                 handler.removeCallbacks(this);
                 scanningBtn.setText("保存");
@@ -149,12 +160,12 @@ public class Scanning_Fragment extends Fragment {
         EventBus.getDefault().register(this);
         serial1Dao = new SerialDao(getActivity());
         directoryDao = new DirectoryDao(getActivity());
-        timeDao=new TimeDao(getActivity());
-        timeCustomerDao=new TimeCustomerDao(getActivity());
+        timeDao = new TimeDao(getActivity());
+        timeCustomerDao = new TimeCustomerDao(getActivity());
         chongfuDialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
         initAdapter();
         outboundBeanList = new ArrayList<>();
-        timeCustomerBeans=new ArrayList<>();
+        timeCustomerBeans = new ArrayList<>();
         return view;
     }
 
@@ -167,9 +178,8 @@ public class Scanning_Fragment extends Fragment {
     //接受扫码消息
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void Event(MessageEvent messageEvent) {
-
-        String string=messageEvent.getMessage();
-        string.replace(" ","");
+        String string = messageEvent.getMessage();
+        string.replace(" ", "");
         scanningTv.setText(string);
         initData(string);
     }
@@ -183,6 +193,7 @@ public class Scanning_Fragment extends Fragment {
         addres = kehuEvent.getAddress();
         scanningNameTv.setText(kehuEvent.getName());
         beizhu = kehuEvent.getBeizhu();
+        scanningBeizhuTv.setText(beizhu);
     }
 
     public static String replaceBlank(String src) {
@@ -247,38 +258,36 @@ public class Scanning_Fragment extends Fragment {
     }
 
 
-    private void initOutExcel(List list, String name, String beizhu,String phone,String addres) {
+    private void initOutExcel(List list, String name, String beizhu, String phone, String addres) {
         outboundBeanList.clear();
         if (list.size() == 0 || name.equals("")) {
             Toast.makeText(getActivity(), "请输入资料", Toast.LENGTH_SHORT).show();
         } else {
 
-                handler.post(runnable);
-                List<SerialBean> xlsInfors = list;
-                for (int i = 0; i < xlsInfors.size(); i++) {
-                    String SerialNumber = xlsInfors.get(i).getSerialNumber();
-                    String model = xlsInfors.get(i).getModel();
-                    String quantity = xlsInfors.get(i).getNumber();
-                    String brand = xlsInfors.get(i).getBrand();
-                    int xuhaoNumber = i + 1;
-                    outboundBeanList.add(new OutboundBean(String.valueOf(xuhaoNumber), DateUtils.getCurrentTime3(), SerialNumber, model, quantity, name, brand, beizhu,phone,addres));
-                }
-                boolean isdirectory = false;
-                for (OutboundBean outboundBean : outboundBeanList) {
-                    isdirectory = directoryDao.insert(outboundBean);  //保存总数据
-                    timeDao.insert(outboundBean.getTime());//保存时间，以作为时间目录的数据源
-                    timeCustomerBeans.add(new TimeCustomerBean(outboundBean.getTime(),outboundBean.getCustomerName(),outboundBean.getPhone()));
-                }
-                for (TimeCustomerBean timeCustomerBean:timeCustomerBeans) {
-                    timeCustomerDao.insert(timeCustomerBean);//保存时间目录客户数据的数据源
-                }
-                if (isdirectory == true) {
-                    Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
-
-
-                } else {
-                    Toast.makeText(getActivity(), "保存失败", Toast.LENGTH_SHORT).show();
-                }
+            handler.post(runnable);
+            List<SerialBean> xlsInfors = list;
+            for (int i = 0; i < xlsInfors.size(); i++) {
+                String SerialNumber = xlsInfors.get(i).getSerialNumber();
+                String model = xlsInfors.get(i).getModel();
+                String quantity = xlsInfors.get(i).getNumber();
+                String brand = xlsInfors.get(i).getBrand();
+                int xuhaoNumber = i + 1;
+                outboundBeanList.add(new OutboundBean(String.valueOf(xuhaoNumber), DateUtils.getCurrentTime3(), SerialNumber, model, quantity, name, brand, beizhu, phone, addres));
+            }
+            boolean isdirectory = false;
+            for (OutboundBean outboundBean : outboundBeanList) {
+                isdirectory = directoryDao.insert(outboundBean);  //保存总数据
+                timeDao.insert(outboundBean.getTime());//保存时间，以作为时间目录的数据源
+                timeCustomerBeans.add(new TimeCustomerBean(outboundBean.getTime(), outboundBean.getCustomerName(), outboundBean.getPhone(),outboundBean.getBeizhu()));
+            }
+            for (TimeCustomerBean timeCustomerBean : timeCustomerBeans) {
+                timeCustomerDao.insert(timeCustomerBean);//保存时间目录客户数据的数据源
+            }
+            if (isdirectory == true) {
+                Toast.makeText(getActivity(), "保存成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "保存失败", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
@@ -358,8 +367,8 @@ public class Scanning_Fragment extends Fragment {
                 startActivity(intent);
                 break;
             case R.id.scanning_btn:
-                initOutExcel(datas, name, beizhu,phone,addres);  //Excel表添加数据
-
+                initOutExcel(datas, name, beizhu, phone, addres);  //Excel表添加数据
+                Log.d("feng", "点击了---");
                 break;
             case R.id.scanning_shuliang:
 
@@ -367,10 +376,10 @@ public class Scanning_Fragment extends Fragment {
             case R.id.scanning_delete_tv:
                 datas.clear();
                 lRecyclerViewAdapter.notifyDataSetChanged();
-                geshu=0;
-                zongshuliang=0;
-                scanningShuliang.setText("总数量："+zongshuliang);
-                scanningGeshu.setText("总个数："+geshu);
+                geshu = 0;
+                zongshuliang = 0;
+                scanningShuliang.setText("总数量：" + zongshuliang);
+                scanningGeshu.setText("总个数：" + geshu);
 
                 handler.removeCallbacks(runnable);
                 scanningBtn.setText("保存");

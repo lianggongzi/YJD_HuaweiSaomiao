@@ -1,14 +1,12 @@
 package com.example.administrator.myapplication.text.activity;
 
 import android.content.Intent;
-import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -17,11 +15,8 @@ import android.widget.TextView;
 import com.example.administrator.myapplication.R;
 import com.example.administrator.myapplication.text.adapter.common.CommonAdapter;
 import com.example.administrator.myapplication.text.adapter.common.ViewHolder;
-import com.example.administrator.myapplication.text.bean.DirectoryBean;
-import com.example.administrator.myapplication.text.bean.KehuEvent;
 import com.example.administrator.myapplication.text.bean.KehuEventXiugai;
 import com.example.administrator.myapplication.text.bean.OutboundBean;
-import com.example.administrator.myapplication.text.bean.SerialBean;
 import com.example.administrator.myapplication.text.db.DirectoryDao;
 import com.example.administrator.myapplication.text.db.TimeCustomerDao;
 import com.example.administrator.myapplication.text.utris.DateUtils;
@@ -61,6 +56,8 @@ public class DirectoryActivity extends AppCompatActivity {
     LinearLayout directoryLl;
     @BindView(R.id.scanning_btn)
     Button scanningBtn;
+    @BindView(R.id.directory_beizhu_tv)
+    TextView directoryBeizhuTv;
     private LRecyclerViewAdapter lRecyclerViewAdapter = null;
     private CommonAdapter<OutboundBean> adapter;
     private List<OutboundBean> datas = new ArrayList<>(); //PDA机屏幕上的List集合
@@ -79,26 +76,26 @@ public class DirectoryActivity extends AppCompatActivity {
     private ArrayList<ArrayList<String>> recordList;
     private static String[] title = {"序号", "扫描日期", "条码编号", "型号", "数量", "客户名称", "品牌", "备注"};
     //计时时间
-    public int timeing=10;
+    public int timeing = 10;
     //点击按钮的标志
-    public boolean flag=true;
+    public boolean flag = true;
     //创建一个Handler对象
     public Handler handlerdaochu = new Handler();
 
 
-    Runnable runnabledaochu =new Runnable() {
+    Runnable runnabledaochu = new Runnable() {
 
         @Override
         public void run() {
-            if(timeing>0){
+            if (timeing > 0) {
                 timeing--;
-                scanningBtn.setText(timeing+"秒后重新点击");
+                scanningBtn.setText(timeing + "秒后重新点击");
 //(任务内延时)
 //每隔1s实现定时操作更改ui页面的数字
-                handlerdaochu.postDelayed(this,1000);
+                handlerdaochu.postDelayed(this, 1000);
                 scanningBtn.setEnabled(false);
-                flag=true;
-            }else{
+                flag = true;
+            } else {
 //计时到10秒后关闭此定时器，重置标志位，重置计时0
                 handlerdaochu.removeCallbacks(this);
                 scanningBtn.setText("导出Excel表");
@@ -120,6 +117,7 @@ public class DirectoryActivity extends AppCompatActivity {
         Intent intent = getIntent();
         time = intent.getStringExtra("time");
         name = intent.getStringExtra("name");
+        beizhu = intent.getStringExtra("beizhu");
         //注册订阅者
         EventBus.getDefault().register(this);
         initAdapter();
@@ -162,6 +160,7 @@ public class DirectoryActivity extends AppCompatActivity {
         beizhu = kehuEvent.getBeizhu();
 //        directoryDao.xiugai(name, beizhu, phone, addres);
 //        timeCustomerDao.xiugai(name, phone);
+//        scanningBeizhuTv.setText(beizhu);
         initData();
     }
 
@@ -178,9 +177,10 @@ public class DirectoryActivity extends AppCompatActivity {
         directoryShuliang.setText("总数量：" + zongshuliang);
         directoryGeshu.setText("总个数：" + geshu);
         directoryNameTv.setText(name);
-        addres = datas.get(0).getAddres();
-        phone = datas.get(0).getPhone();
-        beizhu = datas.get(0).getBeizhu();
+        directoryBeizhuTv.setText(beizhu);
+//        addres = datas.get(0).getAddres();
+//        phone = datas.get(0).getPhone();
+//        beizhu = datas.get(0).getBeizhu();
     }
 
     private void initAdapter() {
@@ -246,10 +246,10 @@ public class DirectoryActivity extends AppCompatActivity {
 //                startActivity(intent);
                 break;
             case R.id.scanning_btn:
-                String time=DateUtils.getCurrentTime3();
-                if (time.equals(SPUtils.get(this,"time",""))){
+                String time = DateUtils.getCurrentTime3();
+                if (time.equals(SPUtils.get(this, "time", ""))) {
                     exportExcel(time);
-                }else {
+                } else {
                     SPUtils.remove(DirectoryActivity.this, "fileName");
                     exportExcel(time);
                 }

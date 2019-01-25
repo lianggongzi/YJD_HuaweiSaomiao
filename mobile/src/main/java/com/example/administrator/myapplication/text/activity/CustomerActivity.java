@@ -129,7 +129,7 @@ public class CustomerActivity extends AppCompatActivity {
                 customerRl.setVisibility(View.VISIBLE);
                 EventBus.getDefault().post(new KehuEvent(name, phone, address, beizhuEdt.getText().toString()));
                 EventBus.getDefault().post(new KehuEventXiugai(name, phone, address, beizhuEdt.getText().toString()));
-                finish();
+//                finish();
             }
         });
 
